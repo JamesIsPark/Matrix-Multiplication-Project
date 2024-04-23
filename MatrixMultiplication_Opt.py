@@ -1,6 +1,6 @@
 import time
 import numpy as np
-
+# Optimized using Numpy
 # Function to initialize the matrix with specified value
 def initMatrix(matrix, size, value):
     for i in range(size):
