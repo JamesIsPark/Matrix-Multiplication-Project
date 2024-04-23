@@ -51,7 +51,7 @@ public class MatrixMultiplication {
     public static void main(String[] args) {
         int[] sizes = {128, 256, 512}; // Sizes of matrices
 
-        int numRuns = 20; // Number of looped runs
+        int[] targetRuns = {5, 10, 20}; // Target run numbers to print
         int precision = 100; // Precision for benchmark recording
 
         // Iterate over each size
@@ -74,21 +74,23 @@ public class MatrixMultiplication {
             }
 
             // Multiply matrices and measure execution time for multiple runs
-            for (int run = 1; run <= numRuns; run++) {
-                double totalExecTime = 0;
+            for (int run = 1; run <= 20; run++) { // Changed to run for 20 times
+                if (run == 5 || run == 10 || run == 20) { // Check if the current run is in the target runs
+                    double totalExecTime = 0;
 
-                for (int i = 0; i < 3; i++) {
-                    for (int j = 0; j < 3; j++) {
-                        double execTime = measureExecutionTime(size, A[i], B[j]);
-                        totalExecTime += execTime;
+                    for (int i = 0; i < 3; i++) {
+                        for (int j = 0; j < 3; j++) {
+                            double execTime = measureExecutionTime(size, A[i], B[j]);
+                            totalExecTime += execTime;
+                        }
                     }
+
+                    // Calculate average execution time
+                    double avgExecTime = totalExecTime / 9; // 3 (A) * 3 (B) = 9
+
+                    // Print benchmark recording
+                    System.out.printf("Run %d: Average Execution Time: %.2f seconds\n", run, avgExecTime);
                 }
-
-                // Calculate average execution time
-                double avgExecTime = totalExecTime / 9; // 3 (A) * 3 (B) = 9
-
-                // Print benchmark recording
-                System.out.printf("Run %d: Average Execution Time: %.2f seconds\n", run, avgExecTime);
 
                 // Pause between runs to allow JIT optimization
                 try {
@@ -100,4 +102,3 @@ public class MatrixMultiplication {
         }
     }
 }
-
