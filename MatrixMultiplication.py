@@ -1,4 +1,5 @@
 import time
+# Naive Implementation
 # Function to perform matrix multiplication
 def matrixMultiply(matrixA, matrixB, size):
     result = [[0 for _ in range(size)] for _ in range(size)]
