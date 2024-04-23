@@ -1,14 +1,7 @@
 import time
 import numpy as np
-# Optimized using Numpy
-# Function to initialize the matrix with specified value
-def initMatrix(matrix, size, value):
-    for i in range(size):
-        for j in range(size):
-            matrix[i][j] = value
-        # end for loop
-    # end for loop
-# end function
+# Optimized Solution using numpy
+# Function to perform matrix multiplication
 
 # Function to print matrix to standard output
 def printMatrix(matrix, size):
@@ -37,9 +30,6 @@ def measureExecutionTime(size, matrixA, matrixB):
 def main():
     sizes = [128, 256, 512]
 
-    numRuns = 20
-    precision = 100 # for benchmarking recording
-
     # Iterate over each size
     for size in sizes:
         print("Matrix Size: " + str(size))
@@ -59,24 +49,21 @@ def main():
         # end for loop
 
         # Multiply matrices and measure execution time for multiple runs
-        for run in range(1, numRuns + 1):
-            total_exec_time = 0
+        total_exec_time = 0
 
-            for i in range(3):
-                for j in range(3):
-                    exec_time = measureExecutionTime(size, matrixA[i], matrixB[j])
-                    total_exec_time += exec_time
-
-            # Calculate average execution time
-            avg_exec_time = total_exec_time / 9  # 3 (A) * 3 (B) = 9
-
-            # Print benchmark recording
-            print("Run %d: Average Execution Time: %.2f seconds" % (run, avg_exec_time))
-
-            # Pause between runs to allow JIT optimization
-            time.sleep(0.1)  # 100 milliseconds pause
+        for i in range(3):
+            for j in range(3):
+                exec_time = measureExecutionTime(size, matrixA[i], matrixB[j])
+                total_exec_time += exec_time
+            # end for loop
         # end for loop
-    # enf for loop
+        # Calculate average execution time
+        avg_exec_time = total_exec_time / 9  # 3 (A) * 3 (B) = 9
+
+        # Print benchmark recording
+        print("Average Execution Time: %.2f seconds" % (avg_exec_time))
+    # end for loop
+# end function
 
 
 

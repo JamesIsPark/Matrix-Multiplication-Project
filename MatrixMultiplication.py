@@ -1,5 +1,4 @@
 import time
-# Naive Implementation
 # Function to perform matrix multiplication
 def matrixMultiply(matrixA, matrixB, size):
     result = [[0 for _ in range(size)] for _ in range(size)]
@@ -72,24 +71,21 @@ def main():
         # end for loop
 
         # Multiply matrices and measure execution time for multiple runs
-        for run in range(1, numRuns + 1):
-            total_exec_time = 0
+        total_exec_time = 0
 
-            for i in range(3):
-                for j in range(3):
-                    exec_time = measureExecutionTime(size, matrixA[i], matrixB[j])
-                    total_exec_time += exec_time
+        for i in range(3):
+            for j in range(3):
+                exec_time = measureExecutionTime(size, matrixA[i], matrixB[j])
+                total_exec_time += exec_time
+        # Calculate average execution time
+        avg_exec_time = total_exec_time / 9  # 3 (A) * 3 (B) = 9
 
-            # Calculate average execution time
-            avg_exec_time = total_exec_time / 9  # 3 (A) * 3 (B) = 9
-
-            # Print benchmark recording
-            print("Run %d: Average Execution Time: %.2f seconds" % (run, avg_exec_time))
-
-            # Pause between runs to allow JIT optimization
-            time.sleep(0.1)  # 100 milliseconds pause
-        # end for loop
-    # enf for loop
+        # Print benchmark recording
+        print("Average Execution Time: %.2f seconds" % (avg_exec_time))
+            # end for loop
+        # enf for loop
+    # end for loop
+# end function
 
 
 
