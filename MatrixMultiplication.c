@@ -4,7 +4,8 @@
 #include <stdbool.h>
 
 // Function to perform matrix multiplication for 32-bit signed integers
-void matrix_multiply_int(int **A, int **B, int **C, int size) {
+int** matrix_multiply_int(int **A, int **B, int **C, int size) {
+    // Perform matrix multiplication
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             C[i][j] = 0;
@@ -13,15 +14,12 @@ void matrix_multiply_int(int **A, int **B, int **C, int size) {
             }
         }
     }
+
+    return C;
 }
 
 // Function to perform matrix multiplication for 64-bit floating point numbers
-float** matrix_multiply_float(float **A, float **B, int size) {
-    // Allocate memory for the result matrix
-    float **C = (float **)malloc(size * sizeof(float *));
-    for (int i = 0; i < size; i++)
-        C[i] = (float *)malloc(size * sizeof(float));
-
+float** matrix_multiply_float(float **A, float **B, float **C, int size) {
     // Perform matrix multiplication
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
@@ -54,23 +52,12 @@ void init_matrix_float(float **matrix, int size, float value) {
     }
 }
 
-// Function to measure wall-clock time for matrix multiplication using integers
-double measure_execution_time_int(int size, int **A, int **B, int **C) {
-    clock_t start = clock(); // Start the timer
-
-    matrix_multiply_int(A, B, C, size); // Perform matrix multiplication
-
-    clock_t end = clock(); // End the timer
-    double time_spent = ((double)(end - start)) / CLOCKS_PER_SEC; // Calculate the elapsed time
-
-    return time_spent; // Return the elapsed time
-}
 
 // Function to measure wall-clock time for matrix multiplication using floats
-double measure_execution_time_float(int size, float **A, float **B) {
+double measure_execution_time_float(int size, float **A, float **B, float **C) {
     clock_t start = clock(); // Start the timer
 
-    float **result = matrix_multiply_float(A, B, size); // Perform matrix multiplication
+    float **result = matrix_multiply_float(A, B, C, size); // Perform matrix multiplication
 
     clock_t end = clock(); // End the timer
     double time_spent = ((double)(end - start)) / CLOCKS_PER_SEC; // Calculate the elapsed time
@@ -84,60 +71,20 @@ double measure_execution_time_float(int size, float **A, float **B) {
     return time_spent; // Return the elapsed time
 }
 
-// Function to validate if the identity matrix is equal to the product of A and the identity matrix
-bool validateIdentityMatrix(int size, int **A) {
-    // Create identity matrix
-    int **identityMatrix = (int **)malloc(size * sizeof(int *));
-    for (int i = 0; i < size; i++) {
-        identityMatrix[i] = (int *)malloc(size * sizeof(int));
-    }
+// Function to measure wall-clock time for matrix multiplication using floats
+double measure_execution_time_int(int size, int **A, int **B, int **C) {
+    clock_t start = clock(); // Start the timer
 
-    // Fill identity matrix
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            identityMatrix[i][j] = (i == j) ? 1 : 0; // Identity matrix has 1s on diagonal
-        }
-    }
+    int **result = matrix_multiply_int(A, B, C, size); // Perform matrix multiplication
 
-    // Allocate memory for the product matrix
-    int **product = (int **)malloc(size * sizeof(int *));
-    for (int i = 0; i < size; i++) {
-        product[i] = (int *)malloc(size * sizeof(int));
-    }
+    clock_t end = clock(); // End the timer
+    double time_spent = ((double)(end - start)) / CLOCKS_PER_SEC; // Calculate the elapsed time
 
-    // Multiply A with identity matrix
-    matrix_multiply_int(A, identityMatrix, product, size);
-
-    // Check if product equals A
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            if (product[i][j] != A[i][j]) {
-                // Free memory
-                for (int k = 0; k < size; k++) {
-                    free(identityMatrix[k]);
-                    free(product[k]);
-                }
-                free(identityMatrix);
-                free(product);
-                return false; // Return false if product does not match A
-            }
-        }
-    }
-
-    // Free memory
-    for (int k = 0; k < size; k++) {
-        free(identityMatrix[k]);
-        free(product[k]);
-    }
-    free(identityMatrix);
-    free(product);
-
-    return true; // Return true if product matches A
+    return time_spent; // Return the elapsed time
 }
 
-int main() {
-    srand(time(NULL)); // Seed for randomization
 
+int main() {
     int sizes[] = {128, 256, 512}; // Sizes of matrices
     int num_sizes = sizeof(sizes) / sizeof(int);
 
@@ -147,29 +94,19 @@ int main() {
         printf("Matrix Size: %d\n", size);
 
         // Example multiplicand and multiplier matrices
-        int **A_int[] = {
-            (int **)malloc(size * sizeof(int *)),
-            (int **)malloc(size * sizeof(int *)),
-            (int **)malloc(size * sizeof(int *))
-        };
-        float **A_float[] = {
-            (float **)malloc(size * sizeof(float *)),
-            (float **)malloc(size * sizeof(float *)),
-            (float **)malloc(size * sizeof(float *))
-        };
-        int **B_int[] = {
-            (int **)malloc(size * sizeof(int *)),
-            (int **)malloc(size * sizeof(int *)),
-            (int **)malloc(size * sizeof(int *))
-        };
-        float **B_float[] = {
-            (float **)malloc(size * sizeof(float *)),
-            (float **)malloc(size * sizeof(float *)),
-            (float **)malloc(size * sizeof(float *))
-        };
+        int ***A_int = (int ***)malloc(3 * sizeof(int **));
+        float ***A_float = (float ***)malloc(3 * sizeof(float **));
+        int ***B_int = (int ***)malloc(3 * sizeof(int **));
+        float ***B_float = (float ***)malloc(3 * sizeof(float **));
+
+        printf("Allocated memory for matrices\n");
 
         // Initialize multiplicand and multiplier matrices
         for (int i = 0; i < 3; i++) {
+            A_int[i] = (int **)malloc(size * sizeof(int *));
+            A_float[i] = (float **)malloc(size * sizeof(float *));
+            B_int[i] = (int **)malloc(size * sizeof(int *));
+            B_float[i] = (float **)malloc(size * sizeof(float *));
             for (int j = 0; j < size; j++) {
                 A_int[i][j] = (int *)malloc(size * sizeof(int));
                 A_float[i][j] = (float *)malloc(size * sizeof(float));
@@ -184,68 +121,76 @@ int main() {
             } else if (i == 1) { // All elements 2
                 init_matrix_int(A_int[i], size, 2);
                 init_matrix_float(A_float[i], size, 2.0f);
-                init_matrix_int(B_int[i], size, 1);
-                init_matrix_float(B_float[i], size, 1.0f);
+                init_matrix_int(B_int[i], size, 2);
+                init_matrix_float(B_float[i], size, 2.0f);
             } else { // Incrementing by row
-                int val = 1;
                 for (int row = 0; row < size; row++) {
                     for (int col = 0; col < size; col++) {
-                        A_int[i][row][col] = val;
-                        A_float[i][row][col] = (float)val;
-                        val++;
+                        A_int[i][row][col] = row;
+                        A_float[i][row][col] = (float)row;
+                        B_int[i][row][col] = (row == col) ? 1 : 0; // Identity matrix has 1s on diagonal
+                        B_float[i][row][col] = (row == col) ? 1 : 0;
                     }
                 }
-                init_matrix_int(B_int[i], size, 1);
-                init_matrix_float(B_float[i], size, 1.0f);
             }
         }
 
+        printf("Initialized matrices\n");
+
         // Multiply matrices and measure execution time for integers
-        double totalExecTime = 0.0;
+        double totalExecTime_int = 0.0;
+        double totalExecTime_float = 0.0;
+
+        // Allocate memory for the result matrices
+        int** result_int = (int**)malloc(size * sizeof(int*));
+        if (result_int == NULL) {
+            perror("Memory allocation failed");
+            exit(EXIT_FAILURE);
+        }
+
+        for (int i = 0; i < size; i++) {
+            result_int[i] = (int*)malloc(size * sizeof(int));
+            if (result_int[i] == NULL) {
+                perror("Memory allocation failed");
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        float** result_float = (float**)malloc(size * sizeof(float*));
+        if (result_float == NULL) {
+            perror("Memory allocation failed");
+            exit(EXIT_FAILURE);
+        }
+
+        for (int i = 0; i < size; i++) {
+            result_float[i] = (float*)malloc(size * sizeof(float));
+            if (result_float[i] == NULL) {
+                perror("Memory allocation failed");
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        printf("Allocated memory for result matrices\n");
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                int **result_int = (int **)malloc(size * sizeof(int *));
-                for (int k = 0; k < size; k++)
-                    result_int[k] = (int *)malloc(size * sizeof(int));
-
                 double exec_time_int = measure_execution_time_int(size, A_int[i], B_int[j], result_int);
                 printf("Matrix A %d with Matrix B %d (Int): Execution Time: %.2f seconds\n", i+1, j+1, exec_time_int);
 
-                // Free memory for result matrix
-                for (int k = 0; k < size; k++) {
-                    free(result_int[k]);
-                }
-                free(result_int);
-
-                // Accumulate total execution time
-                totalExecTime += exec_time_int;
-            }
-        }
-
-        // Multiply matrices and measure execution time for floats
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                double exec_time_float = measure_execution_time_float(size, A_float[i], B_float[j]);
+                double exec_time_float = measure_execution_time_float(size, A_float[i], B_float[j], result_float);
                 printf("Matrix A %d with Matrix B %d (Float): Execution Time: %.2f seconds\n", i+1, j+1, exec_time_float);
 
                 // Accumulate total execution time
-                totalExecTime += exec_time_float;
-            }
-        }
-
-        // Validate identity matrix
-        for (int i = 0; i < 3; i++) {
-            if (validateIdentityMatrix(size, A_int[i])) {
-                printf("Matrix A %d is equal to the product of A and the identity matrix.\n", i + 1);
-            } else {
-                printf("Matrix A %d is not equal to the product of A and the identity matrix.\n", i + 1);
+                totalExecTime_int += exec_time_int;
+                totalExecTime_float += exec_time_float;
             }
         }
 
         // Print average of the total execution time for the current matrix size
-        double avgExecTime = totalExecTime / (3 * 6); // 3x3 operations, 6 total runs
-        printf("Average of Total Execution Time for Size %d: %.2f seconds\n", size, avgExecTime);
+        double avgExecTime_int = totalExecTime_int / 9;
+        double avgExecTime_float = totalExecTime_float / 9;
+        printf("Average of Total int Execution Time for Size %d: %.2f seconds\n", size, avgExecTime_int);
+        printf("Average of Total float Execution Time for Size %d: %.2f seconds\n", size, avgExecTime_float);
 
         // Free memory for matrices
         for (int i = 0; i < 3; i++) {
@@ -260,6 +205,14 @@ int main() {
             free(B_int[i]);
             free(B_float[i]);
         }
+
+        // Free memory for result matrices
+        for (int i = 0; i < size; i++) {
+            free(result_int[i]);
+            free(result_float[i]);
+        }
+        free(result_int);
+        free(result_float);
     }
 
     return 0;

@@ -51,6 +51,10 @@ def main():
                         matrixA[i][j][k] = 2
                     else:
                         matrixA[i][j][k] = j + 1
+                    # end if
+                # end for loop
+            # end for loop
+        # end for loop
 
         # Initialize matrixB
         for i in range(3):
@@ -62,17 +66,26 @@ def main():
                         matrixB[i][j][k] = 2  # All 2s
                     else:
                         matrixB[i][j][k] = 1  # All 1s
+                    # end if
+                # end for loop
+            # end for loop
+        # end for loop
 
         total_exec_time = 0
 
         for i in range(3):
             for j in range(3):
-                exec_time = measureExecutionTime(size, matrixA[i], matrixB[j], isIdentityMatrix=True if i == 0 else False)
+                exec_time = measureExecutionTime(size, matrixA[i], matrixB[j], isIdentityMatrix=True if j == 0 else False)
                 total_exec_time += exec_time
+            # end for loop
+        # end for loop
 
         avg_exec_time = total_exec_time / 9
 
         print("Average Execution Time: %.4f seconds\n" % avg_exec_time)
+    # end for loop
+# end main
 
 if __name__ == "__main__":
     main()
+# end if

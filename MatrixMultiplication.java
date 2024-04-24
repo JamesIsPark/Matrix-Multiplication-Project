@@ -1,144 +1,144 @@
-import java.io.*;
+import java.util.Arrays;
 
 public class MatrixMultiplication {
-    // Function to perform matrix multiplication for 32-bit signed integers
-    public static int[][] matrixMultiply(int[][] A, int[][] B, int size) {
-        int[][] C = new int[size][size];
-
-        // Perform matrix multiplication
+    
+    // Function to perform matrix multiplication
+    public static int[][] matrixMultiply(int[][] matrixA, int[][] matrixB, int size) {
+        int[][] result = new int[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                C[i][j] = 0;
+                result[i][j] = 0;
                 for (int k = 0; k < size; k++) {
-                    C[i][j] += A[i][k] * B[k][j];
+                    result[i][j] += matrixA[i][k] * matrixB[k][j];
                 }
             }
         }
-
-        return C;
+        return result;
     }
-
-    // Function to initialize a matrix with specified value
-    public static void initMatrix(int[][] matrix, int size, int value) {
-        // Set all elements of the matrix to the specified value
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                matrix[i][j] = value;
+        // Function to perform matrix multiplication
+        public static float[][] matrixMultiply(float[][] matrixA, float[][] matrixB, int size) {
+            float[][] result = new float[size][size];
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    result[i][j] = 0;
+                    for (int k = 0; k < size; k++) {
+                        result[i][j] += matrixA[i][k] * matrixB[k][j];
+                    }
+                }
             }
+            return result;
         }
-    }
-
-    // Function to print a matrix to standard output
-    public static void printMatrix(int[][] matrix, int size) {
-        // Print each element of the matrix
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                System.out.print(matrix[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
 
     // Function to measure wall-clock time for matrix multiplication
-    public static double measureExecutionTime(int size, int[][] A, int[][] B) {
-        long startTime = System.nanoTime();
+    public static double measureExecutionTime(int size, int[][] matrixA, int[][] matrixB, boolean isIdentityMatrix) {
+        long startTime = System.currentTimeMillis();
 
-        // Perform matrix multiplication
-        int[][] result = matrixMultiply(A, B, size);
+        int[][] result = matrixMultiply(matrixA, matrixB, size);
 
-        long endTime = System.nanoTime();
-        double timeSpent = (endTime - startTime) / 1e9;
+        long endTime = System.currentTimeMillis();
+
+        if (isIdentityMatrix) {
+            if (!Arrays.deepEquals(matrixA, result)) {
+                System.out.println("!Identity Test Failed!");
+            }
+        }
+
+        double timeSpent = (endTime - startTime) / 1000.0;
 
         return timeSpent;
     }
 
-    // Function to validate if the identity matrix is equal to the product of A and the identity matrix
-    public static boolean validateIdentityMatrix(int size, int[][] A) {
-        int[][] identityMatrix = new int[size][size];
+    // Function to measure wall-clock time for matrix multiplication double
+    public static double measureExecutionTime(int size, float[][] matrixA, float[][] matrixB, boolean isIdentityMatrix) {
+        long startTime = System.currentTimeMillis();
 
-        // Create identity matrix
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                identityMatrix[i][j] = (i == j) ? 1 : 0; // Identity matrix has 1s on diagonal
+        float[][] result = matrixMultiply(matrixA, matrixB, size);
+
+        long endTime = System.currentTimeMillis();
+
+        if (isIdentityMatrix) {
+            if (!Arrays.deepEquals(matrixA, result)) {
+                System.out.println("!Identity Test Failed!");
             }
         }
 
-        // Calculate the product of A and the identity matrix
-        int[][] product = matrixMultiply(A, identityMatrix, size);
+        double timeSpent = (endTime - startTime) / 1000.0;
 
-        // Check if product equals A
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (product[i][j] != A[i][j]) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return timeSpent;
     }
 
     public static void main(String[] args) {
-        int[] sizes = {128, 256, 512}; // Sizes of matrices
+        int[] sizes = {128, 256, 512};
 
-        int[] targetRuns = {1, 5, 10, 20}; // Target run numbers to print
-
-        int precision = 100; // Precision for benchmark recording
-
-        // Iterate over each size
         for (int size : sizes) {
-            System.out.println("Matrix Size: " + size);
+            System.out.printf("Benchmark for matrix size %d:%n", size);
 
-            double totalAvgExecTime = 0; // Total average execution time for the current matrix size
+            int[][][] matrixA = new int[3][size][size];
+            float[][][] matrixA_float = new float[3][size][size];
+            int[][][] matrixB = new int[3][size][size];
+            float[][][] matrixB_float = new float[3][size][size];
 
-            // Example multiplicand matrices
-            int[][][] A = new int[3][size][size];
-            // Example multiplier matrices
-            int[][][] B = new int[3][size][size];
-
-            // Initialize multiplicand and multiplier matrices
+            // Initialize matrixA
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < size; j++) {
                     for (int k = 0; k < size; k++) {
-                        A[i][j][k] = (i == 2) ? j * size + k + 1 : (i + 1);
-                        B[i][j][k] = (i == 0) ? ((j == k) ? 1 : 0) : ((i == 1) ? 1 : 2); // Identity, all 1s, all 2s
+                        if (i == 0) {
+                            matrixA[i][j][k] = 1;
+                            matrixA_float[i][j][k] = 1;
+                        } else if (i == 1) {
+                            matrixA[i][j][k] = 2;
+                            matrixA_float[i][j][k] = 2;
+                        } else {
+                            matrixA[i][j][k] = j + 1;
+                            matrixA_float[i][j][k] = j + 1;
+                        }
                     }
                 }
             }
 
-            // Multiply matrices and measure execution time for multiple runs
-            for (int run = 1; run <= 200; run++) { // Changed to run for 20 times
-                if (run == 1 || run == 5 || run == 10 || run == 20) { // Check if the current run is in the target runs
-                    double totalExecTime = 0; // Total execution time for the current matrix size
-
-                    // Measure execution time
-                    for (int i = 0; i < 3; i++) {
-                        double execTime = measureExecutionTime(size, A[i], B[i]);
-                        totalExecTime += execTime;
+            // Initialize matrixB
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < size; j++) {
+                    for (int k = 0; k < size; k++) {
+                        if (i == 0) {
+                            matrixB[i][j][k] = (j == k) ? 1 : 0; // Identity matrix
+                            matrixB_float[i][j][k] = (j == k) ? 1 : 0; // Identity matrix
+                        } else if (i == 1) {
+                            matrixB[i][j][k] = 2; // All 2s
+                            matrixB_float[i][j][k] = 2; // All 2s
+                        } else {
+                            matrixB[i][j][k] = 1; // All 1s
+                            matrixB_float[i][j][k] = 1; // All 1s
+                        }
                     }
-
-                    // Validation
-                    boolean isValid = validateIdentityMatrix(size, A[0]);
-                    System.out.println("Identity Matrix Validation Result: " + isValid);
-
-                    // Calculate average execution time
-                    double avgExecTime = totalExecTime / 3; // 3 (A) = 3
-                    totalAvgExecTime += avgExecTime; // Add average execution time to the total
-
-                    // Print benchmark recording
-                    System.out.printf("Run %d: Average Execution Time: %.2f seconds\n", run, avgExecTime);
-                }
-
-                // Pause between runs to allow JIT optimization
-                try {
-                    Thread.sleep(100); // 100 milliseconds pause
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
 
-            // Calculate and print the average of the average execution time for the current matrix size
-            double avgOfAvgExecTime = totalAvgExecTime / targetRuns.length;
-            System.out.printf("Average of the Average Execution Time for Size %d: %.2f seconds\n", size, avgOfAvgExecTime);
+
+            for(int run = 1; run <= 1000; run++){
+                double totalExecTime_int = 0;
+                double totalExecTime_float = 0;
+
+                for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        double execTime = measureExecutionTime(size, matrixA[i], matrixB[j], (j == 0));
+                        totalExecTime_int += execTime;
+                    }
+
+                    for (int j = 0; j < 3; j++) {
+                        double execTime = measureExecutionTime(size, matrixA_float[i], matrixB_float[j], (j == 0));
+                        totalExecTime_float += execTime;
+                    }
+                }
+
+                double avgExecTime_int = totalExecTime_int / 9;
+                double avgExecTime_float = totalExecTime_float / 9;
+                if (run % 100 == 0){
+                    System.out.printf("Run: " + run + ". Average Int Execution Time: %.4f seconds%n", avgExecTime_int);
+                    System.out.printf("Run: " + run + ". Average Float Execution Time: %.4f seconds%n%n", avgExecTime_float);
+                }
+            }
+            
         }
     }
 }
